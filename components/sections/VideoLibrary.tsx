@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import Image from "next/image"
-import { ExternalLink, Play, Search } from "lucide-react"
+import { ExternalLink, Play, Search, Volume2, VolumeX } from "lucide-react"
 import { videos } from "@/lib/data"
 import type { Video } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
@@ -21,21 +21,48 @@ const categories = [
 ]
 
 function thumbnailUrl(id: string) {
-  return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
+  return `{{https://i.ytimg.com/vi/${id}}}/hqdefault.jpg`
 }
 
 function watchUrl(id: string) {
-  return `https://www.youtube.com/watch?v=${id}`
+  return `{{https://www.youtube.com/watch?v=${id}}}`
 }
 
+// Autoplays muted — sound is user-opt-in via the voice button (and browsers
+// only allow autoplay when muted anyway). enablejsapi lets us unmute in place.
 function embedUrl(id: string) {
-  return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`
+  return `{{https://www.youtube-nocookie.com/embed/${id}}}?autoplay=1&mute=1&enablejsapi=1&playsinline=1`
 }
 
 export function VideoLibrary() {
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState("All")
   const [active, setActive] = useState<Video | null>(null)
+  const [voiceOn, setVoiceOn] = useState(false)
+  const playerRef = useRef<HTMLIFrameElement>(null)
+
+  function openVideo(video: Video) {
+    setVoiceOn(false)
+    setActive(video)
+  }
+
+  function sendCommand(func: string, args: unknown[] = []) {
+    playerRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: "command", func, args }),
+      "*",
+    )
+  }
+
+  function enableVoice() {
+    sendCommand("unMute")
+    sendCommand("setVolume", [100])
+    setVoiceOn(true)
+  }
+
+  function muteVoice() {
+    sendCommand("mute")
+    setVoiceOn(false)
+  }
 
   const filtered = videos.filter((video) => {
     const matchesCategory = category === "All" || video.category === category
@@ -87,7 +114,7 @@ export function VideoLibrary() {
             <li key={video.id}>
               <TiltCard className="h-full rounded-2xl">
                 <button
-                  onClick={() => setActive(video)}
+                  onClick={() => openVideo(video)}
                   className="group flex h-full w-full flex-col overflow-hidden rounded-2xl bg-bg-light text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple dark:bg-surface-dark"
                 >
                   <div className="relative aspect-video w-full overflow-hidden bg-surface dark:bg-bg-dark">
@@ -125,15 +152,36 @@ export function VideoLibrary() {
       <Modal open={active !== null} onClose={() => setActive(null)} title={active?.title ?? ""}>
         {active && (
           <div className="space-y-4">
-            <div className="aspect-video w-full overflow-hidden rounded-xl bg-bg-dark">
+            <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-bg-dark">
               <iframe
+                ref={playerRef}
                 src={embedUrl(active.id)}
                 title={active.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="h-full w-full"
               />
+              <button
+                onClick={voiceOn ? muteVoice : enableVoice}
+                aria-pressed={voiceOn}
+                className="absolute bottom-3 left-3 z-10 inline-flex items-center gap-2 rounded-full bg-bg-dark/80 px-4 py-2 text-sm font-semibold text-ink-ondark backdrop-blur transition-colors hover:bg-bg-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple"
+              >
+                {voiceOn ? (
+                  <>
+                    <Volume2 size={16} strokeWidth={1.75} />
+                    Voice on
+                  </>
+                ) : (
+                  <>
+                    <VolumeX size={16} strokeWidth={1.75} />
+                    Tap for voice
+                  </>
+                )}
+              </button>
             </div>
+            <p className="text-xs text-ink-secondary dark:text-ink-ondark/50">
+              Videos start automatically without sound — tap the voice button to listen.
+            </p>
             <p className="text-ink-secondary dark:text-ink-ondark/70">{active.description}</p>
             <a
               href={watchUrl(active.id)}

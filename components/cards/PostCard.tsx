@@ -5,7 +5,26 @@ import type { BlogPost } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
 import { TiltCard } from "@/components/ui/TiltCard"
 
+/* Rotating accent palette — each post's topic gets its own highlight color,
+   while dates and body copy stay simple and neutral. */
+const accents = [
+  "text-brand-purple dark:text-brand-purple-light",
+  "text-rose-600 dark:text-rose-400",
+  "text-sky-600 dark:text-sky-400",
+  "text-emerald-600 dark:text-emerald-400",
+  "text-amber-600 dark:text-amber-400",
+]
+
+function accentFor(slug: string): string {
+  let hash = 0
+  for (let i = 0; i < slug.length; i++) {
+    hash = (hash * 31 + slug.charCodeAt(i)) % 9973
+  }
+  return accents[hash % accents.length]
+}
+
 export function PostCard({ post }: { post: BlogPost }) {
+  const accent = accentFor(post.slug)
   return (
     <TiltCard className="h-full rounded-2xl">
       <Link
@@ -29,13 +48,13 @@ export function PostCard({ post }: { post: BlogPost }) {
         >
           {formatDate(post.publishedAt)}
         </time>
-        <h3 className="font-display text-xl font-bold tracking-display dark:text-ink-ondark">
+        <h3 className={`font-display text-xl font-bold tracking-display ${accent}`}>
           {post.title}
         </h3>
         <p className="flex-1 text-sm text-ink-secondary dark:text-ink-ondark/70">
           {post.excerpt}
         </p>
-        <span className="inline-flex items-center gap-2 font-semibold text-brand-purple">
+        <span className={`inline-flex items-center gap-2 font-semibold ${accent}`}>
           Read post
           <ArrowRight
             size={16}
