@@ -29,6 +29,15 @@
   body {
     background-color: var(--bg-light);
     color: var(--text-primary);
+    /* Subtle creative backdrop — a whisper of a dot grid plus one soft brand
+       aurora at the top. Pure CSS gradients: no image requests, no JS, no
+       repaint cost (static, not fixed — fixed attachment janks on mobile). */
+    background-image:
+      radial-gradient(1100px 520px at 85% -120px, rgb(124 58 237 / 0.07), transparent 70%),
+      radial-gradient(rgb(15 15 20 / 0.04) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      28px 28px;
     /* Theme toggle animates the color transition smoothly (§5). */
     transition:
       background-color 300ms ease,
@@ -38,6 +47,12 @@
   .dark body {
     background-color: var(--bg-dark);
     color: var(--text-on-dark);
+    background-image:
+      radial-gradient(1100px 520px at 85% -120px, rgb(124 58 237 / 0.14), transparent 70%),
+      radial-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      28px 28px;
   }
 
   /* Production requirement, not polish (§5). */
