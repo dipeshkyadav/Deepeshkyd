@@ -37,6 +37,7 @@ const config: Config = {
       },
       backgroundImage: {
         "gradient-brand": "var(--gradient-brand)",
+        "gradient-panel": "var(--gradient-panel)",
       },
       boxShadow: {
         card: "0 1px 2px rgb(15 15 20 / 0.06), 0 4px 12px rgb(15 15 20 / 0.06)",

@@ -7,6 +7,8 @@ export type SocialPlatform =
   | "youtube"
   | "instagram"
   | "facebook"
+  | "tiktok"
+  | "linkedin"
   | "threads"
   | "whatsapp"
   | "telegram"

@@ -16,8 +16,9 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
+/* Premium text boxes — soft glass surface, gentle lift and glow on focus. */
 const inputClasses =
-  "w-full rounded-md border border-ink/15 bg-bg-light px-4 py-3 text-ink placeholder:text-ink-secondary/60 focus:border-brand-purple focus:outline-none focus:ring-2 focus:ring-brand-purple/30 dark:border-white/15 dark:bg-surface-dark dark:text-ink-ondark"
+  "w-full rounded-xl border border-ink/10 bg-white/70 px-4 py-3 text-ink shadow-sm backdrop-blur placeholder:text-ink-secondary/50 transition-all duration-300 hover:border-ink/20 focus:-translate-y-0.5 focus:border-brand-purple focus:shadow-glow focus:outline-none focus:ring-2 focus:ring-brand-purple/20 dark:border-white/10 dark:bg-white/5 dark:text-ink-ondark dark:hover:border-white/20"
 
 function mailtoHref(values: FormValues): string {
   const subject = `New message from dipeshkyd.com — ${values.name}`

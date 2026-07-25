@@ -27,18 +27,22 @@ export function ShopGrid({ products }: { products: Product[] }) {
             <TiltCard className="h-full rounded-2xl">
               <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-bg-light dark:bg-surface-dark">
                 {product.image ? (
-                  <div className="relative aspect-[3/2] w-full">
+                  <div className="relative aspect-[3/2] w-full overflow-hidden">
                     <Image
                       src={product.image}
                       alt={product.name}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover"
+                      className="object-cover transition-transform duration-500 hover:scale-105"
                     />
                   </div>
                 ) : (
-                  <div className="flex h-28 items-center justify-center bg-gradient-brand">
-                    <Icon size={40} strokeWidth={1.75} className="text-ink-ondark" />
+                  <div className="relative flex h-28 items-center justify-center overflow-hidden bg-gradient-panel">
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-brand-purple/30 blur-2xl"
+                    />
+                    <Icon size={40} strokeWidth={1.75} className="relative text-brand-purple-light" />
                   </div>
                 )}
                 <div className="flex flex-1 flex-col gap-3 p-6">

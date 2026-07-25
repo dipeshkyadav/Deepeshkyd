@@ -56,6 +56,8 @@ export const socials: SocialLink[] = [
   { platform: "youtube", label: "YouTube", url: "https://youtube.com/@dipeshkyd" },
   { platform: "instagram", label: "Instagram", url: "https://instagram.com/dipeshkyd" },
   { platform: "facebook", label: "Facebook", url: "https://facebook.com/dipeshkyd" },
+  { platform: "tiktok", label: "TikTok", url: "https://tiktok.com/@dipeshkyd" },
+  { platform: "linkedin", label: "LinkedIn", url: "https://linkedin.com/in/dipeshkyd" },
   { platform: "whatsapp", label: "WhatsApp", url: `https://wa.me/${contact.whatsappNumber}` },
   { platform: "telegram", label: "Telegram", url: telegramLink() },
 ]

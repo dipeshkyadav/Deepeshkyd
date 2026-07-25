@@ -1,22 +1,18 @@
 import Link from "next/link"
-import {
-  AtSign,
-  Facebook,
-  Instagram,
-  MessageCircle,
-  Send,
-  Youtube,
-} from "lucide-react"
+import { AtSign } from "lucide-react"
 import { footerNav, site, socials } from "@/lib/data"
 import type { SocialPlatform } from "@/lib/types"
+import { BrandIcon, type BrandIconName } from "@/components/ui/BrandIcons"
 
-const icons: Record<SocialPlatform, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
-  youtube: Youtube,
-  instagram: Instagram,
-  facebook: Facebook,
-  threads: AtSign,
-  whatsapp: MessageCircle,
-  telegram: Send,
+/** Official brand colors on hover — real logos, professional feel. */
+const brandStyles: Partial<Record<SocialPlatform, { icon: BrandIconName; hoverClass: string }>> = {
+  youtube: { icon: "youtube", hoverClass: "hover:text-[#FF0000]" },
+  instagram: { icon: "instagram", hoverClass: "hover:text-[#E4405F]" },
+  facebook: { icon: "facebook", hoverClass: "hover:text-[#1877F2]" },
+  tiktok: { icon: "tiktok", hoverClass: "hover:text-[#010101] dark:hover:text-[#69C9D0]" },
+  linkedin: { icon: "linkedin", hoverClass: "hover:text-[#0A66C2]" },
+  whatsapp: { icon: "whatsapp", hoverClass: "hover:text-[#25D366]" },
+  telegram: { icon: "telegram", hoverClass: "hover:text-[#26A5E4]" },
 }
 
 export function Footer() {
@@ -45,9 +41,9 @@ export function Footer() {
             ))}
           </nav>
 
-          <ul className="flex gap-2" aria-label="Social links">
+          <ul className="flex gap-1.5" aria-label="Social links">
             {socials.map((social) => {
-              const Icon = icons[social.platform]
+              const brand = brandStyles[social.platform]
               return (
                 <li key={social.platform}>
                   <a
@@ -55,9 +51,13 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-ink-secondary transition-all hover:text-brand-purple hover:shadow-glow dark:text-ink-ondark/70 dark:hover:text-brand-purple-light"
+                    className={`flex h-10 w-10 items-center justify-center rounded-full text-ink-secondary transition-all duration-300 hover:-translate-y-1 hover:scale-110 hover:bg-bg-light hover:shadow-card dark:text-ink-ondark/70 dark:hover:bg-white/10 ${brand?.hoverClass ?? "hover:text-brand-purple"}`}
                   >
-                    <Icon size={20} strokeWidth={1.75} />
+                    {brand ? (
+                      <BrandIcon name={brand.icon} size={19} />
+                    ) : (
+                      <AtSign size={19} strokeWidth={1.75} />
+                    )}
                   </a>
                 </li>
               )
