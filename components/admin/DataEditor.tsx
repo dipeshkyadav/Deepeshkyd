@@ -20,9 +20,9 @@ const help: Record<CollectionName, string> = {
   videos:
     'YT Tutorial page. Fields per item: id (YouTube video ID), title, description, category ("Content Creation", "Growth Hacking", "AI Tools", "Personal Branding", or "Editing"), publishedAt (YYYY-MM-DD).',
   products:
-    'Shop page. Fields per item: slug, name, description, priceNpr (number), kind ("template", "checklist", or "mini-course"), image (optional — upload a photo below and paste its URL).',
+    'Shop page. Fields per item: slug, name, description, priceUsd (number, US dollars), kind ("template", "checklist", or "mini-course"), image (optional — upload a photo below and paste its URL).',
   courses:
-    'Course pages. Fields per item: slug, title, description, level ("Beginner" or "Advanced"), isFree, priceNpr (optional), whatYoullLearn (list of strings), curriculum (list of { section, lessons }), coverImage (upload a photo below and paste its URL, or a path under /images).',
+    'Course pages. Fields per item: slug, title, description, level ("Beginner" or "Advanced"), isFree, priceUsd (optional, US dollars), whatYoullLearn (list of strings), curriculum (list of { section, lessons }), coverImage (upload a photo below and paste its URL, or any https image URL).',
 }
 
 export function DataEditor({ initial }: { initial: Collections }) {

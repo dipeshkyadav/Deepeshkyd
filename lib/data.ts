@@ -29,11 +29,11 @@ export const contact = {
 } as const
 
 export function whatsappLink(message: string): string {
-  return `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(message)}`
+  return `{{https://wa.me/${contact.whatsappNumber}}}?text=${encodeURIComponent(message)}`
 }
 
 export function telegramLink(): string {
-  return `https://t.me/${contact.telegramHandle}`
+  return `{{https://t.me/${contact.telegramHandle}}}`
 }
 
 export const primaryNav: NavItem[] = [
@@ -58,7 +58,7 @@ export const socials: SocialLink[] = [
   { platform: "facebook", label: "Facebook", url: "https://facebook.com/dipeshkyd" },
   { platform: "tiktok", label: "TikTok", url: "https://tiktok.com/@dipeshkyd" },
   { platform: "linkedin", label: "LinkedIn", url: "https://linkedin.com/in/dipeshkyd" },
-  { platform: "whatsapp", label: "WhatsApp", url: `https://wa.me/${contact.whatsappNumber}` },
+  { platform: "whatsapp", label: "WhatsApp", url: `{{https://wa.me/${contact.whatsappNumber}}}` },
   { platform: "telegram", label: "Telegram", url: telegramLink() },
 ]
 
@@ -88,6 +88,8 @@ export const photos = {
 /* [SAMPLE DATA] Everything below is structured sample content in     */
 /* Dipesh's voice. Replace titles, prices, and IDs with real ones     */
 /* before launch. Shapes are final — pages consume these types.       */
+/* Prices are in US DOLLARS. Cover photos default to real thumbnails  */
+/* from youtube.com/@dipeshkyd — replace via the admin panel anytime. */
 /* ------------------------------------------------------------------ */
 
 export const courses: Course[] = [
@@ -111,14 +113,14 @@ export const courses: Course[] = [
       },
       {
         section: "Week 2 — Production",
-        lessons: ["Phone filming setup under Rs 5,000", "Scripting hooks that hold", "Batch filming day"],
+        lessons: ["Phone filming setup on a budget", "Scripting hooks that hold", "Batch filming day"],
       },
       {
         section: "Week 3 — Growth",
         lessons: ["Thumbnails people actually click", "Titles: promise + curiosity", "Reading your first analytics"],
       },
     ],
-    coverImage: "/images/poster-content-creator.png",
+    coverImage: "https://i.ytimg.com/vi/NObvtQ-EN_4/hqdefault.jpg",
   },
   {
     slug: "content-engine",
@@ -127,7 +129,7 @@ export const courses: Course[] = [
       "Turn one idea into a week of content across YouTube, Shorts, and Instagram — my full repurposing workflow, tool by tool.",
     level: "Advanced",
     isFree: false,
-    priceNpr: 1999, // [SAMPLE PRICE]
+    priceUsd: 19, // [SAMPLE PRICE]
     whatYoullLearn: [
       "One-idea → seven-pieces repurposing map",
       "AI tools that save hours without making content generic",
@@ -148,7 +150,7 @@ export const courses: Course[] = [
         lessons: ["Batching and scheduling", "When to hire an editor", "Monetization checkpoints"],
       },
     ],
-    coverImage: "/images/poster-document-my-life.png",
+    coverImage: "https://i.ytimg.com/vi/8gzMw_BoN3s/hqdefault.jpg",
   },
   {
     slug: "personal-brand-launchpad",
@@ -157,7 +159,7 @@ export const courses: Course[] = [
       "Build a personal brand while you're still a student — how I balance content creation with CA preparation, and how you can too.",
     level: "Beginner",
     isFree: false,
-    priceNpr: 999, // [SAMPLE PRICE]
+    priceUsd: 9, // [SAMPLE PRICE]
     whatYoullLearn: [
       "Define your brand in one sentence",
       "Consistent visual identity on a student budget",
@@ -174,7 +176,7 @@ export const courses: Course[] = [
         lessons: ["First 10 posts, planned", "Showing up on camera", "The 30-day consistency sprint"],
       },
     ],
-    coverImage: "/images/poster-content-creator.png",
+    coverImage: "https://i.ytimg.com/vi/IAEbTZ7EuVY/hqdefault.jpg",
   },
 ]
 
@@ -210,27 +212,27 @@ export const videos: Video[] = [
   },
 ]
 
-/** [SAMPLE] Digital products. Delivery happens via WhatsApp/Telegram after order. */
+/** [SAMPLE] Digital products. Delivery happens by email or chat after order. */
 export const products: Product[] = [
   {
     slug: "reel-script-template",
     name: "Reel Script Template Pack",
     description: "20 fill-in-the-blank short-form scripts — hooks, structures, and CTAs I use on my own reels.",
-    priceNpr: 299, // [SAMPLE PRICE]
+    priceUsd: 4.99, // [SAMPLE PRICE]
     kind: "template",
   },
   {
     slug: "growth-checklist",
     name: "30-Day Channel Growth Checklist",
     description: "One page per day. Do the task, tick the box, watch the channel move. Printable PDF.",
-    priceNpr: 199, // [SAMPLE PRICE]
+    priceUsd: 2.99, // [SAMPLE PRICE]
     kind: "checklist",
   },
   {
     slug: "editing-mini-course",
     name: "Phone Editing Mini-Course",
     description: "90 minutes of over-the-shoulder editing — from raw clips to a publish-ready video, all on a phone.",
-    priceNpr: 999, // [SAMPLE PRICE]
+    priceUsd: 9.99, // [SAMPLE PRICE]
     kind: "mini-course",
   },
 ]

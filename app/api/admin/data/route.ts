@@ -27,7 +27,7 @@ const productSchema = z.object({
   slug: z.string().min(1),
   name: z.string().min(1),
   description: z.string(),
-  priceNpr: z.number().min(0),
+  priceUsd: z.number().min(0),
   kind: z.enum(["template", "checklist", "mini-course"]),
   image: z.string().optional(),
 })
@@ -38,7 +38,7 @@ const courseSchema = z.object({
   description: z.string(),
   level: z.enum(["Beginner", "Advanced"]),
   isFree: z.boolean(),
-  priceNpr: z.number().min(0).optional(),
+  priceUsd: z.number().min(0).optional(),
   whatYoullLearn: z.array(z.string()),
   curriculum: z.array(
     z.object({ section: z.string(), lessons: z.array(z.string()) }),

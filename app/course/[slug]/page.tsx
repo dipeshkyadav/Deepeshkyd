@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 import { Check, Send } from "lucide-react"
 import { telegramLink, whatsappLink } from "@/lib/data"
 import { getCourses } from "@/lib/content"
-import { formatNpr } from "@/lib/utils"
+import { formatUsd } from "@/lib/utils"
 import { Accordion } from "@/components/ui/Accordion"
 import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
@@ -34,7 +34,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
 
   const enrollMessage = course.isFree
     ? `Hi Dipesh! I want to join your free course "${course.title}".`
-    : `Hi Dipesh! I want to enroll in "${course.title}" (${formatNpr(course.priceNpr ?? 0)}). How do I pay?`
+    : `Hi Dipesh! I want to enroll in "${course.title}" (${formatUsd(course.priceUsd ?? 0)}). How do I pay?`
 
   return (
     <>
@@ -45,8 +45,8 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
             {course.isFree ? (
               <Badge tone="red">Free</Badge>
             ) : (
-              course.priceNpr !== undefined && (
-                <Badge tone="purple">{formatNpr(course.priceNpr)}</Badge>
+              course.priceUsd !== undefined && (
+                <Badge tone="purple">{formatUsd(course.priceUsd)}</Badge>
               )
             )}
           </div>
