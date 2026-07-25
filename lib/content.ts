@@ -22,6 +22,63 @@ import type { BlogPost, Course, Product, Stat, Video } from "./types"
  */
 const contentDir = path.join(process.cwd(), "content")
 
+type WriteFailureCode =
+  | "CONTENT_STORAGE_READ_ONLY"
+  | "CONTENT_STORAGE_PERMISSION_DENIED"
+  | "CONTENT_STORAGE_PATH_ERROR"
+  | "CONTENT_STORAGE_WRITE_FAILED"
+
+const WRITE_FAILURE_STATUS: Record<WriteFailureCode, number> = {
+  CONTENT_STORAGE_READ_ONLY: 503,
+  CONTENT_STORAGE_PERMISSION_DENIED: 503,
+  CONTENT_STORAGE_PATH_ERROR: 500,
+  CONTENT_STORAGE_WRITE_FAILED: 500,
+}
+
+const WRITE_FAILURE_MESSAGE: Record<WriteFailureCode, string> = {
+  CONTENT_STORAGE_READ_ONLY:
+    "This deployment uses a read-only filesystem. Admin changes cannot be saved.",
+  CONTENT_STORAGE_PERMISSION_DENIED:
+    "The server cannot write to content storage. Check filesystem permissions for the content directory.",
+  CONTENT_STORAGE_PATH_ERROR:
+    "Content storage path is not available on this server. Admin changes cannot be saved right now.",
+  CONTENT_STORAGE_WRITE_FAILED:
+    "Failed to save content due to a server filesystem error.",
+}
+
+export class ContentWriteError extends Error {
+  readonly code: WriteFailureCode
+  readonly status: number
+  readonly fsCode?: string
+
+  constructor(code: WriteFailureCode, fsCode?: string) {
+    super(WRITE_FAILURE_MESSAGE[code])
+    this.name = "ContentWriteError"
+    this.code = code
+    this.status = WRITE_FAILURE_STATUS[code]
+    this.fsCode = fsCode
+  }
+}
+
+function toContentWriteError(error: unknown): ContentWriteError {
+  const fsCode = (error as NodeJS.ErrnoException | null)?.code
+  switch (fsCode) {
+    case "EROFS":
+      return new ContentWriteError("CONTENT_STORAGE_READ_ONLY", fsCode)
+    case "EACCES":
+    case "EPERM":
+      return new ContentWriteError("CONTENT_STORAGE_PERMISSION_DENIED", fsCode)
+    case "ENOENT":
+      return new ContentWriteError("CONTENT_STORAGE_PATH_ERROR", fsCode)
+    default:
+      return new ContentWriteError("CONTENT_STORAGE_WRITE_FAILED", fsCode)
+  }
+}
+
+export function isContentWriteError(error: unknown): error is ContentWriteError {
+  return error instanceof ContentWriteError
+}
+
 async function readCollection<T>(file: string, fallback: T): Promise<T> {
   try {
     const raw = await fs.readFile(path.join(contentDir, file), "utf8")
@@ -32,12 +89,16 @@ async function readCollection<T>(file: string, fallback: T): Promise<T> {
 }
 
 async function writeCollection(file: string, data: unknown): Promise<void> {
-  await fs.mkdir(contentDir, { recursive: true })
-  await fs.writeFile(
-    path.join(contentDir, file),
-    JSON.stringify(data, null, 2),
-    "utf8",
-  )
+  try {
+    await fs.mkdir(contentDir, { recursive: true })
+    await fs.writeFile(
+      path.join(contentDir, file),
+      JSON.stringify(data, null, 2),
+      "utf8",
+    )
+  } catch (error) {
+    throw toContentWriteError(error)
+  }
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {

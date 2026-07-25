@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { isAdmin } from "@/lib/admin/auth"
-import { saveCollection } from "@/lib/content"
+import { isContentWriteError, saveCollection } from "@/lib/content"
 
 const statSchema = z.object({
   label: z.string().min(1),
@@ -52,6 +52,27 @@ const collections = {
   courses: z.array(courseSchema),
 } as const
 
+function contentWriteErrorResponse(error: unknown) {
+  if (isContentWriteError(error)) {
+    console.error("[admin:data] content save failed", {
+      code: error.code,
+      fsCode: error.fsCode ?? "UNKNOWN",
+    })
+    return NextResponse.json(
+      { error: error.message, code: error.code },
+      { status: error.status },
+    )
+  }
+  console.error("[admin:data] unexpected content save failure")
+  return NextResponse.json(
+    {
+      error: "Failed to save content due to a server error.",
+      code: "CONTENT_SAVE_FAILED",
+    },
+    { status: 500 },
+  )
+}
+
 export async function PUT(request: Request) {
   if (!(await isAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -74,6 +95,10 @@ export async function PUT(request: Request) {
       { status: 400 },
     )
   }
-  await saveCollection(name, parsed.data)
+  try {
+    await saveCollection(name, parsed.data)
+  } catch (error) {
+    return contentWriteErrorResponse(error)
+  }
   return NextResponse.json({ ok: true })
 }
