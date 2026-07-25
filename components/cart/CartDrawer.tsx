@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowLeft, CheckCircle2, Minus, Plus, ShieldCheck, Trash2, X } from "lucide-react"
-import { whatsappLink } from "@/lib/data"
+import { ArrowLeft, CheckCircle2, Minus, Plus, Send, ShieldCheck, Trash2, X } from "lucide-react"
+import { telegramLink, whatsappLink } from "@/lib/data"
 import { useCart } from "@/lib/store"
 import { formatUsd } from "@/lib/utils"
 
@@ -75,6 +75,8 @@ export function CartDrawer() {
   const [token, setToken] = useState("")
   const [expires, setExpires] = useState(0)
   const [orderId, setOrderId] = useState("")
+  const [summary, setSummary] = useState("")
+  const [copied, setCopied] = useState(false)
   const [error, setError] = useState("")
   const [busy, setBusy] = useState(false)
 
@@ -96,6 +98,7 @@ export function CartDrawer() {
     setStep("cart")
     setError("")
     setCode("")
+    setCopied(false)
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") close()
     }
@@ -170,7 +173,23 @@ export function CartDrawer() {
       if (!response.ok) {
         setError(result?.error ?? "Could not place the order \u2014 try again.")
       } else {
-        setOrderId(result.orderId ?? "")
+        const id = result.orderId ?? ""
+        setOrderId(id)
+        // Capture the order summary BEFORE clearing the cart, so the buyer
+        // can continue the conversation on WhatsApp/Telegram.
+        setSummary(
+          [
+            `Hi Dipesh! I just placed order ${id || "(new)"} on dipeshkyd.com:`,
+            ...items.map(
+              (item) =>
+                `\u2022 ${item.name} \u00d7${item.quantity} \u2014 ${formatUsd(item.priceUsd * item.quantity)}`,
+            ),
+            `Total: ${formatUsd(total)}`,
+            `Name: ${name.trim()}`,
+            `Email: ${email.trim()} (verified)`,
+            `Phone: ${dial} ${phone.trim()}`,
+          ].join("\n"),
+        )
         clear()
         setStep("done")
       }
@@ -178,6 +197,17 @@ export function CartDrawer() {
       setError("Network problem \u2014 check your connection and try again.")
     }
     setBusy(false)
+  }
+
+  async function continueOnTelegram() {
+    try {
+      await navigator.clipboard.writeText(summary)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 4000)
+    } catch {
+      // clipboard unavailable — buyer can still type the order id
+    }
+    window.open(telegramLink(), "_blank", "noopener,noreferrer")
   }
 
   return (
@@ -388,13 +418,31 @@ export function CartDrawer() {
                   </h3>
                   <p className="text-sm text-ink-secondary dark:text-ink-ondark/70">
                     Order {orderId ? <strong>{orderId}</strong> : null} is in. A
-                    confirmation is on its way to <strong>{email.trim()}</strong>{" "}
-                    — I&apos;ll contact you shortly to arrange payment and
-                    delivery.
+                    confirmation is on its way to <strong>{email.trim()}</strong>.
                   </p>
+                  <p className="text-sm font-semibold dark:text-ink-ondark">
+                    Continue in my chat to arrange payment and delivery:
+                  </p>
+                  <div className="flex w-full max-w-xs flex-col gap-3">
+                    <a
+                      href={whatsappLink(summary)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-black px-6 py-3 font-semibold text-ink-ondark transition-shadow hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2 dark:bg-ink-ondark dark:text-ink"
+                    >
+                      Continue on WhatsApp
+                    </a>
+                    <button
+                      onClick={continueOnTelegram}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-brand-purple px-6 py-3 font-semibold text-brand-purple transition-colors hover:bg-brand-purple hover:text-ink-ondark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2"
+                    >
+                      <Send size={18} strokeWidth={1.75} />
+                      {copied ? "Order copied \u2014 paste it in Telegram" : "Continue on Telegram (@deepeshkyd)"}
+                    </button>
+                  </div>
                   <button
                     onClick={close}
-                    className="mt-2 rounded-xl bg-brand-black px-6 py-3 font-semibold text-ink-ondark transition-shadow hover:shadow-glow dark:bg-ink-ondark dark:text-ink"
+                    className="mt-1 text-sm font-medium text-ink-secondary underline-offset-4 hover:text-brand-purple hover:underline dark:text-ink-ondark/60"
                   >
                     Keep browsing
                   </button>
