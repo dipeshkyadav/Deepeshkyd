@@ -21,15 +21,15 @@ const categories = [
 ]
 
 function thumbnailUrl(id: string) {
-  return `{{https://i.ytimg.com/vi/${id}}}/hqdefault.jpg`
+  return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
 }
 
 function watchUrl(id: string) {
-  return `{{https://www.youtube.com/watch?v=${id}}}`
+  return `https://www.youtube.com/watch?v=${id}`
 }
 
 function embedUrl(id: string) {
-  return `{{https://www.youtube-nocookie.com/embed/${id}}}?autoplay=1`
+  return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`
 }
 
 export function VideoLibrary() {
