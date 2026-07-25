@@ -47,6 +47,12 @@ All sample content is marked in `lib/data.ts`:
 - Admin edits are saved to `content/*.json` at runtime (gitignored). Back that folder up before redeploys; without it the site falls back to the defaults in `lib/data.ts`.
 - `ADMIN_*` variables are read at runtime — changing them only needs an app restart, not a rebuild.
 
+### Admin write troubleshooting (read-only filesystems)
+
+- On read-only/non-persistent hosts, admin save requests can return JSON errors like `CONTENT_STORAGE_READ_ONLY` or `CONTENT_STORAGE_PERMISSION_DENIED`.
+- This means runtime file writes to `content/*.json` are blocked by the platform.
+- Fix by deploying to writable persistent storage, or by moving admin content persistence to an external store (DB/object storage) for that environment.
+
 ## Environment variables
 
 All runtime configuration is centralized in `lib/env.ts` — the only file that

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { isAdmin } from "@/lib/admin/auth"
-import { getBlogPosts, saveBlogPosts } from "@/lib/content"
+import { getBlogPosts, isContentWriteError, saveBlogPosts } from "@/lib/content"
 
 const postSchema = z.object({
   slug: z
@@ -20,6 +20,27 @@ function unauthorized() {
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 }
 
+function contentWriteErrorResponse(error: unknown) {
+  if (isContentWriteError(error)) {
+    console.error("[admin:posts] content save failed", {
+      code: error.code,
+      fsCode: error.fsCode ?? "UNKNOWN",
+    })
+    return NextResponse.json(
+      { error: error.message, code: error.code },
+      { status: error.status },
+    )
+  }
+  console.error("[admin:posts] unexpected content save failure")
+  return NextResponse.json(
+    {
+      error: "Failed to save post due to a server error.",
+      code: "CONTENT_SAVE_FAILED",
+    },
+    { status: 500 },
+  )
+}
+
 export async function POST(request: Request) {
   if (!(await isAdmin())) return unauthorized()
   const parsed = postSchema.safeParse(await request.json().catch(() => null))
@@ -36,7 +57,11 @@ export async function POST(request: Request) {
       { status: 409 },
     )
   }
-  await saveBlogPosts([parsed.data, ...posts])
+  try {
+    await saveBlogPosts([parsed.data, ...posts])
+  } catch (error) {
+    return contentWriteErrorResponse(error)
+  }
   return NextResponse.json({ ok: true })
 }
 
@@ -67,7 +92,11 @@ export async function PUT(request: Request) {
     )
   }
   posts[index] = parsed.data
-  await saveBlogPosts(posts)
+  try {
+    await saveBlogPosts(posts)
+  } catch (error) {
+    return contentWriteErrorResponse(error)
+  }
   return NextResponse.json({ ok: true })
 }
 
@@ -80,6 +109,10 @@ export async function DELETE(request: Request) {
   if (remaining.length === posts.length) {
     return NextResponse.json({ error: "Post not found." }, { status: 404 })
   }
-  await saveBlogPosts(remaining)
+  try {
+    await saveBlogPosts(remaining)
+  } catch (error) {
+    return contentWriteErrorResponse(error)
+  }
   return NextResponse.json({ ok: true })
 }
