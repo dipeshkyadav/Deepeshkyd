@@ -4,7 +4,7 @@ import Image from "next/image"
 import { LayoutTemplate, ListChecks, MonitorPlay, Plus } from "lucide-react"
 import type { Product, ProductKind } from "@/lib/types"
 import { useCart } from "@/lib/store"
-import { formatNpr } from "@/lib/utils"
+import { formatUsd } from "@/lib/utils"
 import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
 import { TiltCard } from "@/components/ui/TiltCard"
@@ -60,9 +60,18 @@ export function ShopGrid({ products }: { products: Product[] }) {
                   </p>
                   <div className="mt-2 flex items-center justify-between gap-4 border-t border-ink/5 pt-4 dark:border-white/10">
                     <span className="font-display text-2xl font-bold tracking-display text-brand-red">
-                      {formatNpr(product.priceNpr)}
+                      {formatUsd(product.priceUsd)}
                     </span>
-                    <Button size="sm" onClick={() => add(product.slug)}>
+                    <Button
+                      size="sm"
+                      onClick={() =>
+                        add({
+                          slug: product.slug,
+                          name: product.name,
+                          priceUsd: product.priceUsd,
+                        })
+                      }
+                    >
                       <Plus size={16} strokeWidth={1.75} />
                       Add to cart
                     </Button>

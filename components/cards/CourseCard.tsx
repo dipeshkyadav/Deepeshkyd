@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import type { Course } from "@/lib/types"
-import { formatNpr } from "@/lib/utils"
+import { formatUsd } from "@/lib/utils"
 import { Badge } from "@/components/ui/Badge"
 import { TiltCard } from "@/components/ui/TiltCard"
 
@@ -50,8 +50,8 @@ export function CourseCard({ course, featured }: CourseCardProps) {
             <span className="font-display text-2xl font-bold tracking-display text-brand-red">
               {course.isFree
                 ? "Free"
-                : course.priceNpr !== undefined
-                  ? formatNpr(course.priceNpr)
+                : course.priceUsd !== undefined
+                  ? formatUsd(course.priceUsd)
                   : ""}
             </span>
             <span className="inline-flex items-center gap-2 rounded-full bg-brand-purple px-4 py-2 text-sm font-semibold text-ink-ondark transition-transform duration-200 group-hover:scale-105">
