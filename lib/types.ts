@@ -33,7 +33,7 @@ export type Course = {
   description: string
   level: CourseLevel
   isFree: boolean
-  priceNpr?: number
+  priceUsd?: number // US dollars
   whatYoullLearn: string[]
   curriculum: Array<{ section: string; lessons: string[] }>
   coverImage: string // real photo or brand graphic only — never stock/AI
@@ -71,12 +71,18 @@ export type Product = {
   slug: string
   name: string
   description: string
-  priceNpr: number
+  priceUsd: number // US dollars
   kind: ProductKind
   image?: string // product photo URL — upload via the admin panel
 }
 
+/**
+ * Cart lines snapshot the product's name and price at add-time, so items
+ * added through the admin panel work in the cart without a static lookup.
+ */
 export type CartItem = {
   slug: string
+  name: string
+  priceUsd: number
   quantity: number
 }

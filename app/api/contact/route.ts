@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { env } from "@/lib/env"
+import { businessEmail, sendMail, smtpConfigured } from "@/lib/mailer"
 
 const schema = z.object({
   name: z.string().min(2).max(100),
@@ -9,18 +9,37 @@ const schema = z.object({
 })
 
 /**
- * Delivers contact-form messages straight to the business inbox
- * (env.contactEmail) via the Resend HTTP API.
+ * Delivers contact-form messages straight to the business inbox.
  *
- * Requires the RESEND_API_KEY runtime env var. Without it, this responds
- * 503 and the form falls back to opening the visitor's email app with the
- * message prefilled — it still ends up in the same inbox.
+ * Preferred transport: Gmail SMTP (SMTP_USER + SMTP_PASS app password).
+ * Fallback: Resend HTTP API (RESEND_API_KEY). With neither configured this
+ * responds 503 and the form falls back to opening the visitor's email app
+ * with the message prefilled \u2014 it still ends up in the same inbox.
  */
 export async function POST(request: Request) {
   const parsed = schema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid message." }, { status: 400 })
   }
+  const { name, email, message } = parsed.data
+
+  if (smtpConfigured()) {
+    try {
+      await sendMail({
+        to: businessEmail(),
+        replyTo: email,
+        subject: `New message from dipeshkyd.com \u2014 ${name}`,
+        text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+      })
+      return NextResponse.json({ ok: true })
+    } catch {
+      return NextResponse.json(
+        { error: "Could not send right now." },
+        { status: 502 },
+      )
+    }
+  }
+
   const apiKey = process.env.RESEND_API_KEY?.trim()
   if (!apiKey) {
     return NextResponse.json(
@@ -28,7 +47,6 @@ export async function POST(request: Request) {
       { status: 503 },
     )
   }
-  const { name, email, message } = parsed.data
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -39,9 +57,9 @@ export async function POST(request: Request) {
       from:
         process.env.MAIL_FROM?.trim() ||
         "Dipeshkyd Website <onboarding@resend.dev>",
-      to: [env.contactEmail],
+      to: [businessEmail()],
       reply_to: email,
-      subject: `New message from dipeshkyd.com — ${name}`,
+      subject: `New message from dipeshkyd.com \u2014 ${name}`,
       text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
     }),
   })
