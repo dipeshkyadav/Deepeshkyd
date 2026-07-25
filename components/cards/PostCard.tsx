@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import type { BlogPost } from "@/lib/types"
@@ -9,8 +10,19 @@ export function PostCard({ post }: { post: BlogPost }) {
     <TiltCard className="h-full rounded-2xl">
       <Link
         href={`/blog/${post.slug}`}
-        className="group flex h-full flex-col gap-3 rounded-2xl bg-bg-light p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple dark:bg-surface-dark"
+        className="group flex h-full flex-col gap-3 overflow-hidden rounded-2xl bg-bg-light p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple dark:bg-surface-dark"
       >
+        {post.image ? (
+          <div className="relative -mx-6 -mt-6 aspect-video overflow-hidden">
+            <Image
+              src={post.image}
+              alt=""
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover"
+            />
+          </div>
+        ) : null}
         <time
           dateTime={post.publishedAt}
           className="text-sm text-ink-secondary dark:text-ink-ondark/60"

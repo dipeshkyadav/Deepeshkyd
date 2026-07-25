@@ -1,8 +1,8 @@
 "use client"
 
+import Image from "next/image"
 import { LayoutTemplate, ListChecks, MonitorPlay, Plus } from "lucide-react"
-import { products } from "@/lib/data"
-import type { ProductKind } from "@/lib/types"
+import type { Product, ProductKind } from "@/lib/types"
 import { useCart } from "@/lib/store"
 import { formatNpr } from "@/lib/utils"
 import { Badge } from "@/components/ui/Badge"
@@ -15,7 +15,7 @@ const kindMeta: Record<ProductKind, { label: string; Icon: typeof LayoutTemplate
   "mini-course": { label: "Mini-course", Icon: MonitorPlay },
 }
 
-export function ShopGrid() {
+export function ShopGrid({ products }: { products: Product[] }) {
   const add = useCart((state) => state.add)
 
   return (
@@ -26,9 +26,21 @@ export function ShopGrid() {
           <li key={product.slug} className={index === 1 ? "lg:translate-y-6" : undefined}>
             <TiltCard className="h-full rounded-2xl">
               <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-bg-light dark:bg-surface-dark">
-                <div className="flex h-28 items-center justify-center bg-gradient-brand">
-                  <Icon size={40} strokeWidth={1.75} className="text-ink-ondark" />
-                </div>
+                {product.image ? (
+                  <div className="relative aspect-[3/2] w-full">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-28 items-center justify-center bg-gradient-brand">
+                    <Icon size={40} strokeWidth={1.75} className="text-ink-ondark" />
+                  </div>
+                )}
                 <div className="flex flex-1 flex-col gap-3 p-6">
                   <Badge tone="neutral" className="self-start">
                     {label}

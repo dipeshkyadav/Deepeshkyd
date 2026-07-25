@@ -1,5 +1,6 @@
 /**
- * Central environment configuration — the ONLY place that reads process.env.
+ * Central environment configuration — the ONLY place that reads process.env
+ * for NEXT_PUBLIC_* values.
  *
  * Hosting (Hostinger Cloud Startup — Node.js Web Apps):
  *   hPanel → your Node.js app → Environment variables.
@@ -37,5 +38,11 @@ export const env = {
   telegramHandle: readEnv(
     process.env.NEXT_PUBLIC_TELEGRAM_HANDLE,
     "deepeshkyd",
+  ),
+
+  /** Business email — contact-form messages are delivered here. */
+  contactEmail: readEnv(
+    process.env.NEXT_PUBLIC_CONTACT_EMAIL,
+    "deepesh@dipeshkyd.com",
   ),
 }

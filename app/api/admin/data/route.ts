@@ -29,6 +29,7 @@ const productSchema = z.object({
   description: z.string(),
   priceNpr: z.number().min(0),
   kind: z.enum(["template", "checklist", "mini-course"]),
+  image: z.string().optional(),
 })
 
 const courseSchema = z.object({

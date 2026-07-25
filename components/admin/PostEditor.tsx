@@ -3,6 +3,7 @@
 import { useState } from "react"
 import type { BlogPost } from "@/lib/types"
 import { Button } from "@/components/ui/Button"
+import { ImageUpload } from "@/components/admin/ImageUpload"
 
 const inputClass =
   "w-full rounded-lg border border-ink/15 bg-bg-light px-4 py-2.5 text-sm focus:border-brand-purple focus:outline-none focus:ring-2 focus:ring-brand-purple/30 dark:border-white/15 dark:bg-surface-dark dark:text-ink-ondark"
@@ -24,6 +25,7 @@ export function PostEditor({ post }: { post?: BlogPost }) {
   )
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? "")
   const [pullQuote, setPullQuote] = useState(post?.pullQuote ?? "")
+  const [image, setImage] = useState(post?.image ?? "")
   const [featured, setFeatured] = useState(post?.featured ?? false)
   const [body, setBody] = useState(post?.content.join("\n\n") ?? "")
   const [status, setStatus] = useState("")
@@ -40,6 +42,7 @@ export function PostEditor({ post }: { post?: BlogPost }) {
       publishedAt,
       featured,
       pullQuote: pullQuote.trim() ? pullQuote.trim() : undefined,
+      image: image || undefined,
       content: body
         .split(/\n\s*\n/)
         .map((paragraph) => paragraph.trim())
@@ -158,6 +161,12 @@ export function PostEditor({ post }: { post?: BlogPost }) {
           }
         />
       </div>
+      <ImageUpload
+        id="post-image"
+        label="Cover photo (optional — shown on the blog card and above the post)"
+        value={image}
+        onChange={setImage}
+      />
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"

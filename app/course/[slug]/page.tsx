@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { Check, Send } from "lucide-react"
-import { courses, telegramLink, whatsappLink } from "@/lib/data"
+import { telegramLink, whatsappLink } from "@/lib/data"
+import { getCourses } from "@/lib/content"
 import { formatNpr } from "@/lib/utils"
 import { Accordion } from "@/components/ui/Accordion"
 import { Badge } from "@/components/ui/Badge"
@@ -11,9 +12,7 @@ import { Section } from "@/components/layout/Section"
 
 type Params = Promise<{ slug: string }>
 
-export function generateStaticParams() {
-  return courses.map((course) => ({ slug: course.slug }))
-}
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata({
   params,
@@ -21,6 +20,7 @@ export async function generateMetadata({
   params: Params
 }): Promise<Metadata> {
   const { slug } = await params
+  const courses = await getCourses()
   const course = courses.find((candidate) => candidate.slug === slug)
   if (!course) return {}
   return { title: course.title, description: course.description }
@@ -28,6 +28,7 @@ export async function generateMetadata({
 
 export default async function CourseDetailPage({ params }: { params: Params }) {
   const { slug } = await params
+  const courses = await getCourses()
   const course = courses.find((candidate) => candidate.slug === slug)
   if (!course) notFound()
 

@@ -1,32 +1,36 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import { MessageCircle, Send, Youtube } from "lucide-react"
-import { contact, photos, site, whatsappLink, telegramLink } from "@/lib/data"
+import { Mail, Send, Youtube } from "lucide-react"
+import { contact, photos, site, telegramLink } from "@/lib/data"
+import { env } from "@/lib/env"
 import { Section } from "@/components/layout/Section"
 import { ContactForm } from "@/components/sections/ContactForm"
 
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Reach Dipesh Kr Yadav directly — WhatsApp, Telegram, or the contact form. Real replies, usually within a day.",
+    "Reach Dipesh Kr Yadav directly — email, Telegram, or the contact form. Real replies, usually within a day.",
 }
 
 export default function ContactPage() {
   const channels = [
     {
-      Icon: MessageCircle,
-      label: `WhatsApp · ${contact.whatsappDisplay}`,
-      href: whatsappLink("Hi Dipesh! I found you through dipeshkyd.com."),
+      Icon: Mail,
+      label: `Email · ${env.contactEmail}`,
+      href: `mailto:${env.contactEmail}`,
+      external: false,
     },
     {
       Icon: Send,
       label: `Telegram · @${contact.telegramHandle}`,
       href: telegramLink(),
+      external: true,
     },
     {
       Icon: Youtube,
       label: "YouTube · @dipeshkyd",
       href: site.youtube,
+      external: true,
     },
   ]
 
@@ -36,16 +40,16 @@ export default function ContactPage() {
         <div>
           <p className="text-lg text-ink-secondary dark:text-ink-ondark/70">
             Questions about a course, a product order, or a collab — I read
-            everything myself. The fastest way to reach me is WhatsApp or
-            Telegram.
+            everything myself. The form below delivers straight to my business
+            inbox, and I usually reply within a day.
           </p>
           <ul className="mt-8 space-y-3">
             {channels.map((channel) => (
               <li key={channel.label}>
                 <a
                   href={channel.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={channel.external ? "_blank" : undefined}
+                  rel={channel.external ? "noopener noreferrer" : undefined}
                   className="flex items-center gap-3 rounded-xl bg-surface p-4 font-medium transition-shadow hover:shadow-lift dark:bg-surface-dark dark:text-ink-ondark"
                 >
                   <channel.Icon size={20} strokeWidth={1.75} className="text-brand-purple" />

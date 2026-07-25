@@ -13,6 +13,7 @@ const postSchema = z.object({
   publishedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
   featured: z.boolean().optional(),
   pullQuote: z.string().optional(),
+  image: z.string().optional(),
   content: z.array(z.string().min(1)).min(1, "Add at least one paragraph"),
 })
 

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import type { Course, Product, Stat, Video } from "@/lib/types"
 import { Button } from "@/components/ui/Button"
+import { ImageUpload } from "@/components/admin/ImageUpload"
 
 type Collections = {
   stats: Stat[]
@@ -19,9 +20,9 @@ const help: Record<CollectionName, string> = {
   videos:
     'YT Tutorial page. Fields per item: id (YouTube video ID), title, description, category ("Content Creation", "Growth Hacking", "AI Tools", "Personal Branding", or "Editing"), publishedAt (YYYY-MM-DD).',
   products:
-    'Shop page. Fields per item: slug, name, description, priceNpr (number), kind ("template", "checklist", or "mini-course").',
+    'Shop page. Fields per item: slug, name, description, priceNpr (number), kind ("template", "checklist", or "mini-course"), image (optional — upload a photo below and paste its URL).',
   courses:
-    'Course pages. Fields per item: slug, title, description, level ("Beginner" or "Advanced"), isFree, priceNpr (optional), whatYoullLearn (list of strings), curriculum (list of { section, lessons }), coverImage (path under /images).',
+    'Course pages. Fields per item: slug, title, description, level ("Beginner" or "Advanced"), isFree, priceNpr (optional), whatYoullLearn (list of strings), curriculum (list of { section, lessons }), coverImage (upload a photo below and paste its URL, or a path under /images).',
 }
 
 export function DataEditor({ initial }: { initial: Collections }) {
@@ -34,6 +35,7 @@ export function DataEditor({ initial }: { initial: Collections }) {
   })
   const [status, setStatus] = useState("")
   const [busy, setBusy] = useState(false)
+  const [uploadedPhoto, setUploadedPhoto] = useState("")
 
   async function save() {
     setBusy(true)
@@ -90,6 +92,16 @@ export function DataEditor({ initial }: { initial: Collections }) {
       <p className="mt-4 text-sm text-ink-secondary dark:text-ink-ondark/60">
         {help[active]}
       </p>
+      {active === "products" || active === "courses" ? (
+        <div className="mt-4 rounded-xl border border-ink/10 p-4 dark:border-white/15">
+          <ImageUpload
+            id="data-photo"
+            label="Photo uploader — upload, then copy the URL into the JSON (image for products, coverImage for courses)"
+            value={uploadedPhoto}
+            onChange={setUploadedPhoto}
+          />
+        </div>
+      ) : null}
       <textarea
         value={drafts[active]}
         onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>

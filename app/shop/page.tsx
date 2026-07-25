@@ -1,8 +1,11 @@
 import type { Metadata } from "next"
 import { MessageCircle, PackageCheck, ShoppingBag } from "lucide-react"
 import { contact } from "@/lib/data"
+import { getProducts } from "@/lib/content"
 import { Section } from "@/components/layout/Section"
 import { ShopGrid } from "@/components/sections/ShopGrid"
+
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Shop",
@@ -28,7 +31,9 @@ const steps = [
   },
 ]
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const products = await getProducts()
+
   return (
     <>
       <Section eyebrow="Digital products" script="grab" title="The shop">
@@ -36,7 +41,7 @@ export default function ShopPage() {
           The exact templates and systems I use on my own channel — packaged
           so you can skip the trial and error.
         </p>
-        <ShopGrid />
+        <ShopGrid products={products} />
       </Section>
 
       <Section

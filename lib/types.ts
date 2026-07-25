@@ -59,6 +59,7 @@ export type BlogPost = {
   publishedAt: string // ISO date
   featured?: boolean
   pullQuote?: string
+  image?: string // cover photo URL — upload via the admin panel
   content: string[] // paragraphs
 }
 
@@ -70,6 +71,7 @@ export type Product = {
   description: string
   priceNpr: number
   kind: ProductKind
+  image?: string // product photo URL — upload via the admin panel
 }
 
 export type CartItem = {

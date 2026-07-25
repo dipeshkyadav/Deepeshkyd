@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { CheckCircle2 } from "lucide-react"
-import { whatsappLink } from "@/lib/data"
+import { env } from "@/lib/env"
 import { Button } from "@/components/ui/Button"
 
 const schema = z.object({
@@ -19,36 +19,56 @@ type FormValues = z.infer<typeof schema>
 const inputClasses =
   "w-full rounded-md border border-ink/15 bg-bg-light px-4 py-3 text-ink placeholder:text-ink-secondary/60 focus:border-brand-purple focus:outline-none focus:ring-2 focus:ring-brand-purple/30 dark:border-white/15 dark:bg-surface-dark dark:text-ink-ondark"
 
+function mailtoHref(values: FormValues): string {
+  const subject = `New message from dipeshkyd.com — ${values.name}`
+  const body = `Name: ${values.name}\nEmail: ${values.email}\n\n${values.message}`
+  return `mailto:${env.contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
+
 export function ContactForm() {
-  const [sent, setSent] = useState(false)
+  const [sent, setSent] = useState<"idle" | "sent" | "mailto">("idle")
+  const [busy, setBusy] = useState(false)
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) })
 
-  function onSubmit(values: FormValues) {
-    const message = [
-      "New message from dipeshkyd.com",
-      `Name: ${values.name}`,
-      `Email: ${values.email}`,
-      "",
-      values.message,
-    ].join("\n")
-    window.open(whatsappLink(message), "_blank", "noopener,noreferrer")
-    setSent(true)
+  async function onSubmit(values: FormValues) {
+    setBusy(true)
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      })
+      if (response.ok) {
+        setSent("sent")
+        return
+      }
+      // Server-side sending unavailable — open the visitor's email app
+      // with everything prefilled. Same inbox, one extra tap.
+      window.location.href = mailtoHref(values)
+      setSent("mailto")
+    } catch {
+      window.location.href = mailtoHref(values)
+      setSent("mailto")
+    } finally {
+      setBusy(false)
+    }
   }
 
-  if (sent) {
+  if (sent !== "idle") {
     return (
       <div className="rounded-2xl bg-surface p-8 text-center dark:bg-surface-dark" role="status">
         <CheckCircle2 size={40} strokeWidth={1.75} className="mx-auto text-brand-purple" />
         <h3 className="mt-4 font-display text-xl font-bold tracking-display dark:text-ink-ondark">
-          Message on its way
+          {sent === "sent" ? "Message sent" : "One more tap"}
         </h3>
         <p className="mt-2 text-ink-secondary dark:text-ink-ondark/70">
-          Your message opened in WhatsApp — hit send there and I&apos;ll reply
-          personally, usually within a day.
+          {sent === "sent"
+            ? `Your message is in my inbox (${env.contactEmail}) — I reply personally, usually within a day.`
+            : `Your email app opened with the message addressed to ${env.contactEmail} — hit send there and I reply personally, usually within a day.`}
         </p>
       </div>
     )
@@ -117,12 +137,12 @@ export function ContactForm() {
         )}
       </div>
 
-      <Button type="submit" size="lg" className="w-full">
-        Send via WhatsApp
+      <Button type="submit" size="lg" className="w-full" disabled={busy}>
+        {busy ? "Sending…" : "Send message"}
       </Button>
       <p className="text-center text-xs text-ink-secondary dark:text-ink-ondark/60">
-        Submitting opens WhatsApp with your message prefilled — nothing is
-        stored on this site.
+        Your message is delivered straight to {env.contactEmail} — no WhatsApp
+        involved, nothing else is stored on this site.
       </p>
     </form>
   )

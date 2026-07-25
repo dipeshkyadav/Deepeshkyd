@@ -1,11 +1,13 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { blogPosts } from "@/lib/data"
+import { getBlogPosts } from "@/lib/content"
 import { formatDate } from "@/lib/utils"
 import { PostCard } from "@/components/cards/PostCard"
 import { Section } from "@/components/layout/Section"
 import { CreativeText } from "@/components/ui/CreativeText"
+
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -13,7 +15,8 @@ export const metadata: Metadata = {
     "Essays and post-mortems from Dipesh Kr Yadav's creator journey — focus, growth, and building in public.",
 }
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts()
   const featured = blogPosts.find((post) => post.featured) ?? blogPosts[0]
   const rest = blogPosts.filter((post) => post.slug !== featured.slug)
 

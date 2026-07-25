@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { courses } from "@/lib/data"
+import type { Course } from "@/lib/types"
 import { FilterChips } from "@/components/ui/FilterChips"
 import { CourseCard } from "@/components/cards/CourseCard"
 
 const filters = ["All", "Free", "Paid", "Beginner", "Advanced"]
 
-export function CourseCatalog() {
+export function CourseCatalog({ courses }: { courses: Course[] }) {
   const [filter, setFilter] = useState("All")
 
   const filtered = courses.filter((course) => {

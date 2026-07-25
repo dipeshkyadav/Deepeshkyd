@@ -1,16 +1,15 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import { blogPosts, photos, site } from "@/lib/data"
+import { photos, site } from "@/lib/data"
+import { getBlogPosts } from "@/lib/content"
 import { formatDate } from "@/lib/utils"
 import { PostCard } from "@/components/cards/PostCard"
 import { CreativeText } from "@/components/ui/CreativeText"
 
 type Params = Promise<{ slug: string }>
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }))
-}
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata({
   params,
@@ -18,6 +17,7 @@ export async function generateMetadata({
   params: Params
 }): Promise<Metadata> {
   const { slug } = await params
+  const blogPosts = await getBlogPosts()
   const post = blogPosts.find((candidate) => candidate.slug === slug)
   if (!post) return {}
   return { title: post.title, description: post.excerpt }
@@ -25,6 +25,7 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: { params: Params }) {
   const { slug } = await params
+  const blogPosts = await getBlogPosts()
   const post = blogPosts.find((candidate) => candidate.slug === slug)
   if (!post) notFound()
 
@@ -46,6 +47,19 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           {formatDate(post.publishedAt)} · {site.fullName}
         </time>
       </header>
+
+      {post.image && (
+        <div className="relative mt-10 aspect-[2/1] w-full overflow-hidden rounded-2xl">
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="object-cover"
+          />
+        </div>
+      )}
 
       <div className="mt-10 space-y-6 text-lg leading-relaxed text-ink-secondary dark:text-ink-ondark/80">
         {post.content.map((paragraph, index) => (
