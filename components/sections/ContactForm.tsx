@@ -16,9 +16,8 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-/* Glassmorphism text boxes — frosted surface, gentle lift and glow on focus. */
 const inputClasses =
-  "w-full rounded-xl border border-white/50 bg-white/50 px-4 py-3 text-ink shadow-sm backdrop-blur-md placeholder:text-ink-secondary/50 transition-all duration-300 hover:border-white/70 focus:-translate-y-0.5 focus:border-brand-purple focus:shadow-glow focus:outline-none focus:ring-2 focus:ring-brand-purple/20 dark:border-white/10 dark:bg-white/5 dark:text-ink-ondark dark:hover:border-white/20"
+  "w-full rounded-xl border border-ink/10 bg-white/70 px-4 py-3 text-ink shadow-sm placeholder:text-ink-secondary/50 transition-all duration-300 hover:border-ink/20 focus:border-brand-purple focus:outline-none focus:ring-2 focus:ring-brand-purple/20 dark:border-white/10 dark:bg-white/5 dark:text-ink-ondark dark:hover:border-white/20"
 
 function mailtoHref(values: FormValues): string {
   const subject = `New message from dipeshkyd.com — ${values.name}`
@@ -61,7 +60,7 @@ export function ContactForm() {
 
   if (sent !== "idle") {
     return (
-      <div className="glass-card rounded-2xl p-8 text-center" role="status">
+      <div className="rounded-2xl bg-surface p-8 text-center dark:bg-surface-dark" role="status">
         <CheckCircle2 size={40} strokeWidth={1.75} className="mx-auto text-brand-purple" />
         <h3 className="mt-4 font-display text-xl font-bold tracking-display dark:text-ink-ondark">
           {sent === "sent" ? "Message sent" : "One more tap"}

@@ -25,7 +25,7 @@ export function ShopGrid({ products }: { products: Product[] }) {
         return (
           <li key={product.slug} className={index === 1 ? "lg:translate-y-6" : undefined}>
             <TiltCard className="h-full rounded-2xl">
-              <div className="glass-card flex h-full flex-col overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
+              <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-bg-light dark:bg-surface-dark">
                 {product.image ? (
                   <div className="relative aspect-[3/2] w-full overflow-hidden">
                     <Image
