@@ -10,7 +10,7 @@ export function PostCard({ post }: { post: BlogPost }) {
     <TiltCard className="h-full rounded-2xl">
       <Link
         href={`/blog/${post.slug}`}
-        className="group flex h-full flex-col gap-3 overflow-hidden rounded-2xl bg-bg-light p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple dark:bg-surface-dark"
+        className="glass-card group flex h-full flex-col gap-3 overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple"
       >
         {post.image ? (
           <div className="relative -mx-6 -mt-6 aspect-video overflow-hidden">
@@ -19,7 +19,7 @@ export function PostCard({ post }: { post: BlogPost }) {
               alt=""
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
           </div>
         ) : null}

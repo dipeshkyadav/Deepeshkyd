@@ -16,15 +16,15 @@ export function CourseCard({ course, featured }: CourseCardProps) {
     <TiltCard className="h-full rounded-2xl">
       <Link
         href={`/course/${course.slug}`}
-        className="group flex h-full flex-col overflow-hidden rounded-2xl bg-bg-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple dark:bg-surface-dark"
+        className="glass-card group flex h-full flex-col overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple"
       >
-        <div className={featured ? "relative aspect-[21/9] w-full" : "relative aspect-video w-full"}>
+        <div className={featured ? "relative aspect-[21/9] w-full overflow-hidden" : "relative aspect-video w-full overflow-hidden"}>
           <Image
             src={course.coverImage}
             alt={`${course.title} — course by Dipesh Kr Yadav`}
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover object-top"
+            className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
           />
         </div>
         <div className="flex flex-1 flex-col gap-3 p-6">

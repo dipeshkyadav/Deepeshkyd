@@ -17,7 +17,7 @@ export function Navbar() {
   const count = items.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/5 bg-bg-light/80 backdrop-blur-md dark:border-white/10 dark:bg-bg-dark/80">
+    <header className="sticky top-0 z-40 border-b border-white/50 bg-white/55 backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-black/40">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link
           href="/"
@@ -39,10 +39,10 @@ export function Navbar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                  "rounded-full px-4 py-2 text-sm font-medium transition-all duration-300",
                   active
-                    ? "bg-brand-purple/10 text-brand-purple dark:bg-brand-purple/20 dark:text-brand-purple-light"
-                    : "text-ink-secondary hover:text-brand-purple dark:text-ink-ondark/70 dark:hover:text-brand-purple-light",
+                    ? "border border-white/40 bg-white/50 text-brand-purple shadow-card backdrop-blur dark:border-white/10 dark:bg-white/10 dark:text-brand-purple-light"
+                    : "text-ink-secondary hover:bg-white/40 hover:text-brand-purple dark:text-ink-ondark/70 dark:hover:bg-white/5 dark:hover:text-brand-purple-light",
                 )}
               >
                 {item.label}
@@ -79,14 +79,14 @@ export function Navbar() {
       {menuOpen && (
         <nav
           aria-label="Mobile"
-          className="border-t border-ink/5 px-6 pb-4 pt-2 dark:border-white/10 md:hidden"
+          className="border-t border-white/40 px-6 pb-4 pt-2 dark:border-white/10 md:hidden"
         >
           {primaryNav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setMenuOpen(false)}
-              className="block rounded-lg px-3 py-3 font-medium text-ink-secondary hover:bg-surface hover:text-brand-purple dark:text-ink-ondark/80 dark:hover:bg-surface-dark"
+              className="block rounded-lg px-3 py-3 font-medium text-ink-secondary hover:bg-white/50 hover:text-brand-purple dark:text-ink-ondark/80 dark:hover:bg-white/10"
             >
               {item.label}
             </Link>
