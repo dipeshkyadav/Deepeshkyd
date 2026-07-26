@@ -1,10 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { motion, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
-const MotionLink = motion.create(Link)
+/**
+ * Button — intentionally free of animation libraries. Links render as real
+ * anchors, so navigation works in every situation (even before scripts
+ * hydrate). Micro-interactions are pure CSS transforms.
+ */
 
 type ButtonProps = {
   variant?: "primary" | "secondary" | "ghost"
@@ -20,7 +23,7 @@ type ButtonProps = {
 }
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-[box-shadow,background-color,color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+  "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-[transform,box-shadow,background-color,color] duration-200 hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
 
 const variants = {
   primary:
@@ -49,58 +52,40 @@ export function Button({
   children,
   ...rest
 }: ButtonProps) {
-  const reduce = useReducedMotion()
-  const hover = reduce ? undefined : { scale: 1.03 }
-  const tap = reduce ? undefined : { scale: 0.97 }
-  const spring = { type: "spring" as const, stiffness: 260, damping: 24 }
   const classes = cn(base, variants[variant], sizes[size], className)
 
   if (href && external) {
     return (
-      <motion.a
+      <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        whileHover={hover}
-        whileTap={tap}
-        transition={spring}
         className={classes}
         onClick={onClick}
         {...rest}
       >
         {children}
-      </motion.a>
+      </a>
     )
   }
 
   if (href) {
     return (
-      <MotionLink
-        href={href}
-        whileHover={hover}
-        whileTap={tap}
-        transition={spring}
-        className={classes}
-        onClick={onClick}
-        {...rest}
-      >
+      <Link href={href} className={classes} onClick={onClick} {...rest}>
         {children}
-      </MotionLink>
+      </Link>
     )
   }
 
   return (
-    <motion.button
+    <button
       type={type}
       disabled={disabled}
       onClick={onClick}
-      whileHover={hover}
-      whileTap={tap}
-      transition={spring}
       className={classes}
       {...rest}
     >
       {children}
-    </motion.button>
+    </button>
   )
 }

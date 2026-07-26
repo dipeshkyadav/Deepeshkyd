@@ -9,26 +9,28 @@ type StatsCounterProps = {
   className?: string
 }
 
-/** Count-up on first scroll into view. Reduced motion → static value. */
+/**
+ * Shows the REAL value immediately (server-rendered — correct even before
+ * scripts load), then plays the count-up once on first scroll into view as
+ * a pure enhancement. Reduced motion → static value.
+ */
 export function StatsCounter({ value, suffix = "", className }: StatsCounterProps) {
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { once: true, margin: "-80px" })
   const reduce = useReducedMotion()
-  const [display, setDisplay] = useState(0)
+  const [display, setDisplay] = useState(value)
+  const [played, setPlayed] = useState(false)
 
   useEffect(() => {
-    if (!inView) return
-    if (reduce) {
-      setDisplay(value)
-      return
-    }
+    if (!inView || reduce || played || value <= 0) return
+    setPlayed(true)
     const controls = animate(0, value, {
       duration: 1.4,
       ease: "easeOut",
       onUpdate: (latest: number) => setDisplay(Math.round(latest)),
     })
     return () => controls.stop()
-  }, [inView, reduce, value])
+  }, [inView, reduce, played, value])
 
   return (
     <span ref={ref} className={className}>

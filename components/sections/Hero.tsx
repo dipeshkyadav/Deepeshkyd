@@ -14,21 +14,41 @@ import { CreativeText } from "@/components/ui/CreativeText"
 
 /**
  * Home hero — Poster 1's visual language: purple diamond behind a free
- * cutout photo (NO card frame — the photo floats over the diamond),
- * script + bold-purple headline mix. Photo layer parallax ≤ 8px (§16).
+ * cutout photo (no card frame), script + bold-purple headline mix.
+ * Photo layer parallax ≤ 8px (§16).
  *
- * The photo is a plain <img> on purpose (no server-side optimizer, no
- * hostname allow-list). If the file ever fails to load, the hero quietly
- * shows the name over the diamond — never a broken-image icon.
+ * Photo reliability rules:
+ * - The photo stage has a FIXED aspect ratio, so the diamond keeps its
+ *   shape even while the photo loads or if it fails.
+ * - Several photo sources are tried in order; if every one fails, a clean
+ *   branded poster text shows instead. alt="" ensures broken-image alt
+ *   text is never visible.
+ * - A ref check catches images that failed BEFORE scripts loaded (the
+ *   case a plain onError handler misses).
  */
+
+const photoSources = Array.from(
+  new Set([
+    env.heroImage,
+    "https://dipeshkyd-1.vercel.app/images/poster-content-creator.png",
+    "https://avatars.githubusercontent.com/u/171313872?v=4",
+  ]),
+)
+
 export function Hero() {
   const reduce = useReducedMotion()
   const ref = useRef<HTMLDivElement>(null)
-  const [photoFailed, setPhotoFailed] = useState(false)
+  const [sourceIndex, setSourceIndex] = useState(0)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
   const springX = useSpring(x, { stiffness: 260, damping: 24 })
   const springY = useSpring(y, { stiffness: 260, damping: 24 })
+
+  const exhausted = sourceIndex >= photoSources.length
+
+  function tryNextSource() {
+    setSourceIndex((current) => current + 1)
+  }
 
   function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
     if (reduce || event.pointerType !== "mouse" || !ref.current) return
@@ -82,15 +102,19 @@ export function Hero() {
           </div>
         </motion.div>
 
-        <div className="relative mx-auto w-full max-w-sm md:max-w-none">
+        {/* Photo stage — fixed aspect so the composition never collapses. */}
+        <div className="relative mx-auto aspect-[4/5] w-full max-w-sm md:max-w-none">
           {/* Poster 1's purple diamond, offset deliberately off-grid */}
           <div
             aria-hidden="true"
             className="absolute left-1/2 top-1/2 h-4/5 w-4/5 -translate-x-[45%] -translate-y-[55%] rotate-12 rounded-3xl bg-brand-purple/90"
           />
-          <motion.div style={{ x: springX, y: springY }} className="relative">
-            {photoFailed ? (
-              <div className="relative flex aspect-[4/5] w-full flex-col items-center justify-center gap-2 p-8 text-center">
+          <motion.div
+            style={{ x: springX, y: springY }}
+            className="absolute inset-0"
+          >
+            {exhausted ? (
+              <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-8 text-center">
                 <span className="font-script text-3xl text-white/90 drop-shadow">
                   Professional
                 </span>
@@ -102,18 +126,26 @@ export function Hero() {
                 </span>
               </div>
             ) : (
-              // Free cutout photo — no card frame, floats over the diamond.
+              // Free cutout photo — floats over the diamond, no card frame.
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={env.heroImage}
-                alt="Dipesh Kr Yadav — professional content creator"
-                width={2300}
-                height={2875}
-                fetchPriority="high"
-                onError={() => setPhotoFailed(true)}
-                className="h-auto w-full drop-shadow-2xl"
+                key={photoSources[sourceIndex]}
+                ref={(node) => {
+                  // Catch failures that happened before hydration — a plain
+                  // onError misses those.
+                  if (node && node.complete && node.naturalWidth === 0) {
+                    tryNextSource()
+                  }
+                }}
+                src={photoSources[sourceIndex]}
+                alt=""
+                onError={tryNextSource}
+                className="h-full w-full object-contain drop-shadow-2xl"
               />
             )}
+            <span className="sr-only">
+              {site.fullName} — professional content creator
+            </span>
           </motion.div>
         </div>
       </div>
