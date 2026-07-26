@@ -5,6 +5,8 @@ import type { Video } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
 
 function MarqueeCard({ video }: { video: Video }) {
+  // Plain string concatenation on purpose — never let tooling mangle the URL.
+  const thumbnail = "https://i.ytimg.com/vi/" + video.id + "/hqdefault.jpg"
   return (
     <Link
       href="/yt-tutorial"
@@ -12,7 +14,7 @@ function MarqueeCard({ video }: { video: Video }) {
     >
       <span className="relative block aspect-video overflow-hidden rounded-xl bg-surface shadow-card transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lift dark:bg-surface-dark">
         <Image
-          src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}
+          src={thumbnail}
           alt=""
           fill
           sizes="288px"

@@ -1,5 +1,6 @@
 import { promises as fs } from "fs"
 import path from "path"
+import { list, put } from "@vercel/blob"
 import {
   blogPosts as defaultBlogPosts,
   courses as defaultCourses,
@@ -10,19 +11,33 @@ import {
 import type { BlogPost, Course, Product, Stat, Video } from "./types"
 
 /**
- * File-backed content store — everything the /admin panel can edit.
+ * Content store — everything the /admin panel can edit.
  *
- * Reads check `content/<collection>.json` first and fall back to the code
- * defaults in `lib/data.ts`, so the site works with no content files at all.
- * Saves write pretty-printed JSON that goes live on the next request —
- * no rebuild needed. Server-side only (uses the filesystem).
+ * On Vercel the filesystem is read-only, so when BLOB_READ_WRITE_TOKEN is
+ * set (Vercel dashboard → Storage → Blob), collections persist to Vercel
+ * Blob and survive every redeploy. Without the token (local dev), they
+ * fall back to `content/<collection>.json` on disk. Reads always fall
+ * back to the code defaults in `lib/data.ts`, so the site works with no
+ * content files at all.
  *
- * NOTE: `content/` is gitignored. Back it up before redeploying, or live
- * edits fall back to the code defaults.
+ * NOTE: Blob edits go live within about a minute (CDN cache).
  */
 const contentDir = path.join(process.cwd(), "content")
+const useBlob = Boolean(process.env.BLOB_READ_WRITE_TOKEN)
 
 async function readCollection<T>(file: string, fallback: T): Promise<T> {
+  if (useBlob) {
+    try {
+      const { blobs } = await list({ prefix: "content/" + file })
+      const blob = blobs.find((entry) => entry.pathname === "content/" + file)
+      if (!blob) return fallback
+      const response = await fetch(blob.url, { cache: "no-store" })
+      if (!response.ok) return fallback
+      return (await response.json()) as T
+    } catch {
+      return fallback
+    }
+  }
   try {
     const raw = await fs.readFile(path.join(contentDir, file), "utf8")
     return JSON.parse(raw) as T
@@ -32,6 +47,16 @@ async function readCollection<T>(file: string, fallback: T): Promise<T> {
 }
 
 async function writeCollection(file: string, data: unknown): Promise<void> {
+  if (useBlob) {
+    await put("content/" + file, JSON.stringify(data, null, 2), {
+      access: "public",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: "application/json",
+      cacheControlMaxAge: 60,
+    })
+    return
+  }
   await fs.mkdir(contentDir, { recursive: true })
   await fs.writeFile(
     path.join(contentDir, file),

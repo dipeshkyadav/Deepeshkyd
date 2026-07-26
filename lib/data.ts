@@ -28,12 +28,19 @@ export const contact = {
   telegramHandle: env.telegramHandle,
 } as const
 
+// NOTE: URLs below are built with plain string concatenation on purpose —
+// keep them that way so they never get mangled by tooling.
 export function whatsappLink(message: string): string {
-  return `{{https://wa.me/${contact.whatsappNumber}}}?text=${encodeURIComponent(message)}`
+  return (
+    "https://wa.me/" +
+    contact.whatsappNumber +
+    "?text=" +
+    encodeURIComponent(message)
+  )
 }
 
 export function telegramLink(): string {
-  return `{{https://t.me/${contact.telegramHandle}}}`
+  return "https://t.me/" + contact.telegramHandle
 }
 
 export const primaryNav: NavItem[] = [
@@ -52,13 +59,14 @@ export const footerNav: NavItem[] = [
   { label: "Refund", href: "/refund" },
 ]
 
+/** Real profiles — confirmed by Dipesh (Jul 2026). */
 export const socials: SocialLink[] = [
   { platform: "youtube", label: "YouTube", url: "https://youtube.com/@dipeshkyd" },
-  { platform: "instagram", label: "Instagram", url: "https://instagram.com/dipeshkyd" },
-  { platform: "facebook", label: "Facebook", url: "https://facebook.com/dipeshkyd" },
-  { platform: "tiktok", label: "TikTok", url: "https://tiktok.com/@dipeshkyd" },
-  { platform: "linkedin", label: "LinkedIn", url: "https://linkedin.com/in/dipeshkyd" },
-  { platform: "whatsapp", label: "WhatsApp", url: `{{https://wa.me/${contact.whatsappNumber}}}` },
+  { platform: "instagram", label: "Instagram", url: "https://www.instagram.com/talkwithdeepesh" },
+  { platform: "facebook", label: "Facebook", url: "https://www.facebook.com/Dipeshkyd" },
+  { platform: "tiktok", label: "TikTok", url: "https://www.tiktok.com/@talkwithdeepesh" },
+  { platform: "linkedin", label: "LinkedIn", url: "https://www.linkedin.com/in/dipesh-kr-yadav-5b8b64358" },
+  { platform: "whatsapp", label: "WhatsApp", url: "https://wa.me/" + contact.whatsappNumber },
   { platform: "telegram", label: "Telegram", url: telegramLink() },
 ]
 
@@ -78,10 +86,17 @@ export const stats: Stat[] = [
   { label: "Students learning", value: 0, suffix: "+" }, // [REPLACE WITH REAL FIGURE]
 ]
 
-/** Approved photos — the only two until Dipesh supplies more (§1). */
+/**
+ * Approved brand posters. The image files live on the original deployment
+ * (this repo has no public/images folder), so we load them from there.
+ * To self-host: upload each poster in /admin → photo uploader (Vercel Blob)
+ * and paste the returned URLs here or keep using these.
+ */
 export const photos = {
-  posterContentCreator: "/images/poster-content-creator.png",
-  posterDocumentMyLife: "/images/poster-document-my-life.png",
+  posterContentCreator:
+    "https://dipeshkyd-1.vercel.app/images/poster-content-creator.png",
+  posterDocumentMyLife:
+    "https://dipeshkyd-1.vercel.app/images/poster-document-my-life.png",
 } as const
 
 /* ------------------------------------------------------------------ */

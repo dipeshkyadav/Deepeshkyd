@@ -20,18 +20,24 @@ const categories = [
   "Editing",
 ]
 
+// NOTE: URLs are built with plain string concatenation on purpose —
+// keep them that way so they never get mangled by tooling.
 function thumbnailUrl(id: string) {
-  return `{{https://i.ytimg.com/vi/${id}}}/hqdefault.jpg`
+  return "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg"
 }
 
 function watchUrl(id: string) {
-  return `{{https://www.youtube.com/watch?v=${id}}}`
+  return "https://www.youtube.com/watch?v=" + id
 }
 
 // Autoplays muted — sound is user-opt-in via the voice button (and browsers
 // only allow autoplay when muted anyway). enablejsapi lets us unmute in place.
 function embedUrl(id: string) {
-  return `{{https://www.youtube-nocookie.com/embed/${id}}}?autoplay=1&mute=1&enablejsapi=1&playsinline=1`
+  return (
+    "https://www.youtube-nocookie.com/embed/" +
+    id +
+    "?autoplay=1&mute=1&enablejsapi=1&playsinline=1"
+  )
 }
 
 export function VideoLibrary() {
