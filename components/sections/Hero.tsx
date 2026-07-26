@@ -7,18 +7,19 @@ import {
   useReducedMotion,
   useSpring,
 } from "framer-motion"
-import { posterQuotes, site } from "@/lib/data"
+import { site } from "@/lib/data"
 import { env } from "@/lib/env"
 import { Button } from "@/components/ui/Button"
 import { CreativeText } from "@/components/ui/CreativeText"
 
 /**
- * Home hero — Poster 1's visual language: purple diamond behind the photo,
+ * Home hero — Poster 1's visual language: purple diamond behind a free
+ * cutout photo (NO card frame — the photo floats over the diamond),
  * script + bold-purple headline mix. Photo layer parallax ≤ 8px (§16).
  *
  * The photo is a plain <img> on purpose (no server-side optimizer, no
- * hostname allow-list) and falls back to a branded poster card if the
- * file ever fails to load — the hero never shows a broken image.
+ * hostname allow-list). If the file ever fails to load, the hero quietly
+ * shows the name over the diamond — never a broken-image icon.
  */
 export function Hero() {
   const reduce = useReducedMotion()
@@ -89,29 +90,19 @@ export function Hero() {
           />
           <motion.div style={{ x: springX, y: springY }} className="relative">
             {photoFailed ? (
-              <div className="relative flex aspect-[4/5] w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-brand p-8 text-center shadow-lift">
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-3xl bg-white/10"
-                />
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -bottom-12 -left-8 h-44 w-44 rotate-12 rounded-3xl bg-black/10"
-                />
-                <span className="font-script text-3xl text-white/90">
+              <div className="relative flex aspect-[4/5] w-full flex-col items-center justify-center gap-2 p-8 text-center">
+                <span className="font-script text-3xl text-white/90 drop-shadow">
                   Professional
                 </span>
-                <span className="font-display text-4xl font-bold uppercase tracking-display text-white">
+                <span className="font-display text-3xl font-bold uppercase tracking-display text-white drop-shadow">
                   Content Creator
                 </span>
-                <span className="mt-1 text-sm font-semibold uppercase tracking-stretched text-white/80">
+                <span className="mt-1 text-sm font-semibold uppercase tracking-stretched text-white/85 drop-shadow">
                   {site.fullName}
-                </span>
-                <span className="mt-4 max-w-xs text-sm italic leading-relaxed text-white/70">
-                  “{posterQuotes[0]}”
                 </span>
               </div>
             ) : (
+              // Free cutout photo — no card frame, floats over the diamond.
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={env.heroImage}
@@ -120,7 +111,7 @@ export function Hero() {
                 height={2875}
                 fetchPriority="high"
                 onError={() => setPhotoFailed(true)}
-                className="h-auto w-full rounded-2xl shadow-lift"
+                className="h-auto w-full drop-shadow-2xl"
               />
             )}
           </motion.div>
