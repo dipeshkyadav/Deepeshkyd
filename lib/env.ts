@@ -2,11 +2,8 @@
  * Central environment configuration — the ONLY place that reads process.env
  * for NEXT_PUBLIC_* values.
  *
- * Hosting (Hostinger Cloud Startup — Node.js Web Apps):
- *   hPanel → your Node.js app → Environment variables.
- *   NEXT_PUBLIC_* values are inlined at BUILD time, so set them in hPanel
- *   BEFORE the build step runs (install `npm ci` → build `npm run build`
- *   → start `npm run start -- -p $PORT`). Changing them later requires a rebuild.
+ * Vercel: Project → Settings → Environment Variables. NEXT_PUBLIC_* values
+ * are inlined at BUILD time, so redeploy after changing them.
  *
  * Local development: copy `.env.example` to `.env.local` and edit.
  *
@@ -44,5 +41,17 @@ export const env = {
   contactEmail: readEnv(
     process.env.NEXT_PUBLIC_CONTACT_EMAIL,
     "deepesh@dipeshkyd.com",
+  ),
+
+  /**
+   * Home hero photo URL. Default: the poster served by the original
+   * deployment. To use your own: upload the photo in /admin (photo
+   * uploader), copy the URL, set NEXT_PUBLIC_HERO_IMAGE in Vercel,
+   * and redeploy. If the image ever fails to load, the site shows a
+   * branded poster card instead — never a broken image.
+   */
+  heroImage: readEnv(
+    process.env.NEXT_PUBLIC_HERO_IMAGE,
+    "https://dipeshkyd-1.vercel.app/images/poster-content-creator.png",
   ),
 }

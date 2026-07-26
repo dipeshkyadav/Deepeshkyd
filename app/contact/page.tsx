@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Image from "next/image"
 import { Mail, Send, Youtube } from "lucide-react"
 import { contact, photos, site, telegramLink } from "@/lib/data"
 import { env } from "@/lib/env"
@@ -63,13 +62,15 @@ export default function ContactPage() {
               aria-hidden="true"
               className="absolute -right-3 -top-3 h-full w-full -rotate-2 rounded-2xl bg-brand-red/10"
             />
-            <Image
+            {/* Plain <img>: decorative, and can never crash server rendering. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={photos.posterDocumentMyLife}
-              alt="Dipesh Kr Yadav — Document My Life poster"
+              alt=""
               width={2297}
               height={3066}
-              sizes="320px"
-              className="relative rounded-2xl shadow-card"
+              loading="lazy"
+              className="relative h-auto w-full rounded-2xl shadow-card"
             />
           </div>
         </div>
