@@ -14,13 +14,14 @@ export default async function AdminDataPage() {
   ])
 
   return (
-    <div className="mx-auto max-w-4xl px-6">
+    <div>
       <h1 className="font-display text-3xl font-bold tracking-display">
-        Site data
+        Advanced (JSON)
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-ink-secondary dark:text-ink-ondark/60">
-        Stats, YouTube videos, shop products, and courses — edited as JSON and
-        validated before saving. Changes go live immediately, no rebuild.
+        Raw JSON editing for power users. Prefer the Courses, Videos, Shop
+        products, and Home stats sections in the sidebar — they edit the same
+        data with friendlier forms. Everything is validated before saving.
       </p>
       <DataEditor initial={{ stats, videos, products, courses }} />
     </div>
