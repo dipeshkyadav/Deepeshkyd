@@ -1,6 +1,5 @@
 import { promises as fs } from "fs"
 import path from "path"
-import { list, put } from "@vercel/blob"
 import {
   blogPosts as defaultBlogPosts,
   courses as defaultCourses,
@@ -19,8 +18,6 @@ import type { BlogPost, Course, Product, Stat, Video } from "./types"
  * fall back to `content/<collection>.json` on disk. Reads always fall
  * back to the code defaults in `lib/data.ts`, so the site works with no
  * content files at all.
- *
- * NOTE: Blob edits go live within about a minute (CDN cache).
  */
 const contentDir = path.join(process.cwd(), "content")
 const useBlob = Boolean(process.env.BLOB_READ_WRITE_TOKEN)
@@ -28,6 +25,7 @@ const useBlob = Boolean(process.env.BLOB_READ_WRITE_TOKEN)
 async function readCollection<T>(file: string, fallback: T): Promise<T> {
   if (useBlob) {
     try {
+      const { list } = await import("@vercel/blob")
       const { blobs } = await list({ prefix: "content/" + file })
       const blob = blobs.find((entry) => entry.pathname === "content/" + file)
       if (!blob) return fallback
@@ -48,6 +46,7 @@ async function readCollection<T>(file: string, fallback: T): Promise<T> {
 
 async function writeCollection(file: string, data: unknown): Promise<void> {
   if (useBlob) {
+    const { put } = await import("@vercel/blob")
     await put("content/" + file, JSON.stringify(data, null, 2), {
       access: "public",
       addRandomSuffix: false,
