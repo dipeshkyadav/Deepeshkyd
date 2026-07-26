@@ -24,10 +24,14 @@ import { env } from "@/lib/env"
 import { Button } from "@/components/ui/Button"
 import { CreativeText } from "@/components/ui/CreativeText"
 
+/**
+ * Premium Hero — photo sources ordered by reliability.
+ * Primary: /images/hero.png (put your notebook cutout here)
+ */
 const photoSources = Array.from(
   new Set([
+    "/images/hero.png",
     env.heroImage,
-    "https://dipeshkyd-1.vercel.app/images/poster-content-creator.png",
     "https://avatars.githubusercontent.com/u/171313872?v=4",
   ]),
 )
