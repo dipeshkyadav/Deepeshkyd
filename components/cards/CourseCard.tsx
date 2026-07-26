@@ -13,6 +13,8 @@ type CourseCardProps = {
 
 /** Ecom-style product card — image first, price anchored in red. */
 export function CourseCard({ course, featured }: CourseCardProps) {
+  const cover = course.coverImage || ""
+
   return (
     <TiltCard className="h-full rounded-2xl">
       <Link
@@ -26,15 +28,25 @@ export function CourseCard({ course, featured }: CourseCardProps) {
               : "relative aspect-video w-full overflow-hidden bg-surface dark:bg-bg-dark"
           }
         >
-          <Image
-            src={course.coverImage}
-            alt={`${course.title} — course by Dipesh Kr Yadav`}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
-          />
+          {cover ? (
+            <Image
+              src={cover}
+              alt={`${course.title} — course by Dipesh Kr Yadav`}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+              unoptimized
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-brand-purple/10 text-brand-purple">
+              <span className="font-display text-lg font-bold">Course</span>
+            </div>
+          )}
           <span className="absolute left-3 top-3">
-            <Badge tone="neutral" className="bg-bg-light/90 shadow-card backdrop-blur dark:bg-bg-dark/80">
+            <Badge
+              tone="neutral"
+              className="bg-bg-light/90 shadow-card backdrop-blur dark:bg-bg-dark/80"
+            >
               {course.level}
             </Badge>
           </span>

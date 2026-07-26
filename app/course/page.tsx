@@ -12,7 +12,13 @@ export const metadata: Metadata = {
 }
 
 export default async function CoursePage() {
-  const courses = await getCourses()
+  let courses = []
+  try {
+    courses = await getCourses()
+  } catch (err) {
+    console.error("getCourses failed:", err)
+    // Fall through with empty list so the page still renders
+  }
 
   return (
     <Section eyebrow="Learn the right way" script="pick" title="Your next course">
