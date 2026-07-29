@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { getCourses } from "@/lib/content"
+import type { Course } from "@/lib/types"
 import { Section } from "@/components/layout/Section"
 import { CourseCatalog } from "@/components/sections/CourseCatalog"
 
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 }
 
 export default async function CoursePage() {
-  let courses = []
+  let courses: Course[] = []
   try {
     courses = await getCourses()
   } catch (err) {
