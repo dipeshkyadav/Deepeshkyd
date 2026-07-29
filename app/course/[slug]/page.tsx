@@ -19,17 +19,28 @@ export async function generateMetadata({
 }: {
   params: Params
 }): Promise<Metadata> {
-  const { slug } = await params
-  const courses = await getCourses()
-  const course = courses.find((candidate) => candidate.slug === slug)
-  if (!course) return {}
-  return { title: course.title, description: course.description }
+  try {
+    const { slug } = await params
+    const courses = await getCourses()
+    const course = courses.find((c) => c.slug === slug)
+    if (!course) return { title: "Course" }
+    return { title: course.title, description: course.description }
+  } catch {
+    return { title: "Course" }
+  }
 }
 
 export default async function CourseDetailPage({ params }: { params: Params }) {
   const { slug } = await params
-  const courses = await getCourses()
-  const course = courses.find((candidate) => candidate.slug === slug)
+
+  let course = null
+  try {
+    const courses = await getCourses()
+    course = courses.find((c) => c.slug === slug) ?? null
+  } catch (error) {
+    console.error("[course-detail] getCourses failed:", error)
+  }
+
   if (!course) notFound()
 
   const enrollMessage = course.isFree
@@ -75,15 +86,22 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
             aria-hidden="true"
             className="absolute -left-4 -top-4 h-full w-full rotate-3 rounded-2xl bg-brand-purple/20"
           />
-          <Image
-            src={course.coverImage}
-            alt={`${course.title} — taught by Dipesh Kr Yadav`}
-            width={800}
-            height={1000}
-            priority
-            sizes="(max-width: 768px) 90vw, 33vw"
-            className="relative rounded-2xl object-cover shadow-lift"
-          />
+          {course.coverImage ? (
+            <Image
+              src={course.coverImage}
+              alt={`${course.title} — taught by Dipesh Kr Yadav`}
+              width={800}
+              height={1000}
+              priority
+              unoptimized
+              sizes="(max-width: 768px) 90vw, 33vw"
+              className="relative rounded-2xl object-cover shadow-lift"
+            />
+          ) : (
+            <div className="relative flex aspect-[4/5] items-center justify-center rounded-2xl bg-brand-purple/10 text-brand-purple">
+              <span className="font-display text-xl font-bold">Course</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -93,7 +111,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         className="bg-surface py-16 dark:bg-surface-dark"
       >
         <ul className="grid gap-4 sm:grid-cols-2">
-          {course.whatYoullLearn.map((item) => (
+          {(course.whatYoullLearn ?? []).map((item) => (
             <li key={item} className="flex items-start gap-3">
               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-purple/10 text-brand-purple dark:bg-brand-purple/20">
                 <Check size={14} strokeWidth={2.5} />
@@ -106,11 +124,11 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
 
       <Section eyebrow="Curriculum" script="inside" title="What's covered">
         <Accordion
-          items={course.curriculum.map((section) => ({
+          items={(course.curriculum ?? []).map((section) => ({
             title: section.section,
             content: (
               <ul className="list-disc space-y-1 pl-5">
-                {section.lessons.map((lesson) => (
+                {(section.lessons ?? []).map((lesson) => (
                   <li key={lesson}>{lesson}</li>
                 ))}
               </ul>

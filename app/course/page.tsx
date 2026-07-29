@@ -14,11 +14,11 @@ export const metadata: Metadata = {
 
 export default async function CoursePage() {
   let courses: Course[] = []
+
   try {
     courses = await getCourses()
-  } catch (err) {
-    console.error("getCourses failed:", err)
-    // Fall through with empty list so the page still renders
+  } catch (error) {
+    console.error("[course] getCourses failed:", error)
   }
 
   return (
